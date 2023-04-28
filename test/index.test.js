@@ -35,7 +35,7 @@ test('Record update() and get()', async (t) => {
   )
   t.deepEqual(peer.record.get(who, 'profile'), { name: 'alice' }, 'get')
 
-  const fieldRoots1 = peer.record._getFieldRoots('profile')
+  const fieldRoots1 = peer.record.getFieldRoots(who, 'profile')
   t.deepEquals(fieldRoots1, { name: ['Pt4YwxksvCLir45Tmw3hXK'] }, 'fieldRoots')
 
   t.ok(await p(peer.record.update)(who, 'profile', { age: 20 }), 'update .age')
@@ -45,7 +45,7 @@ test('Record update() and get()', async (t) => {
     'get'
   )
 
-  const fieldRoots2 = peer.record._getFieldRoots('profile')
+  const fieldRoots2 = peer.record.getFieldRoots(who, 'profile')
   t.deepEquals(
     fieldRoots2,
     { name: ['Pt4YwxksvCLir45Tmw3hXK'], age: ['XqkG9Uz1eQcxv9R1f3jgKS'] },
@@ -72,7 +72,7 @@ test('Record update() and get()', async (t) => {
     'get'
   )
 
-  const fieldRoots3 = peer.record._getFieldRoots('profile')
+  const fieldRoots3 = peer.record.getFieldRoots(who, 'profile')
   t.deepEquals(
     fieldRoots3,
     { name: ['WGDGt1UEGPpRyutfDyC2we'], age: ['XqkG9Uz1eQcxv9R1f3jgKS'] },
@@ -85,7 +85,7 @@ test('Record squeeze', async (t) => {
   t.ok(await p(peer.record.update)(who, 'profile', { age: 22 }), 'update .age')
   t.ok(await p(peer.record.update)(who, 'profile', { age: 23 }), 'update .age')
 
-  const fieldRoots4 = peer.record._getFieldRoots('profile')
+  const fieldRoots4 = peer.record.getFieldRoots(who, 'profile')
   t.deepEquals(
     fieldRoots4,
     { name: ['WGDGt1UEGPpRyutfDyC2we'], age: ['6qu5mbLbFPJHCFge7QtU48'] },
@@ -95,7 +95,7 @@ test('Record squeeze', async (t) => {
   t.equals(peer.record._squeezePotential('profile'), 3, 'squeezePotential=3')
   t.true(await p(peer.record.squeeze)(who, 'profile'), 'squeezed')
 
-  const fieldRoots5 = peer.record._getFieldRoots('profile')
+  const fieldRoots5 = peer.record.getFieldRoots(who, 'profile')
   t.deepEquals(
     fieldRoots5,
     { name: ['Ba96TjutuuPbdMMvNS4BbL'], age: ['Ba96TjutuuPbdMMvNS4BbL'] },
@@ -105,7 +105,7 @@ test('Record squeeze', async (t) => {
   t.equals(peer.record._squeezePotential('profile'), 0, 'squeezePotential=0')
   t.false(await p(peer.record.squeeze)(who, 'profile'), 'squeeze idempotent')
 
-  const fieldRoots6 = peer.record._getFieldRoots('profile')
+  const fieldRoots6 = peer.record.getFieldRoots(who, 'profile')
   t.deepEquals(fieldRoots6, fieldRoots5, 'fieldRoots')
 })
 
@@ -127,7 +127,7 @@ test('Record receives old branched update', async (t) => {
   const rec = await p(peer.db.add)(msg, rootHash)
   t.equals(rec.hash, 'JXvFSXE9s1DF77cSu5XUm', 'msg hash')
 
-  const fieldRoots7 = peer.record._getFieldRoots('profile')
+  const fieldRoots7 = peer.record.getFieldRoots(who, 'profile')
   t.deepEquals(
     fieldRoots7,
     {
