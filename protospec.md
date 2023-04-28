@@ -5,7 +5,7 @@
 ```mermaid
 graph RL
 
-R["(Feed root)"]:::feedroot
+R["(Feed root)"]
 A[updates age]
 B[updates name]
 C[updates age]
@@ -53,7 +53,7 @@ highlighted in blue.
 ```mermaid
 graph RL
 
-R["(Feed root)"]:::feedroot
+R["(Feed root)"]
 A[updates age]:::blue
 A-->R
 classDef default fill:#bbb,stroke:#fff0,color:#000
@@ -65,7 +65,7 @@ classDef blue fill:#6af,stroke:#fff0,color:#000
 ```mermaid
 graph RL
 
-R["(Feed root)"]:::feedroot
+R["(Feed root)"]
 A[updates age]:::blue
 B[updates name]:::blue
 B-->A-->R
@@ -79,7 +79,7 @@ classDef blue fill:#6af,stroke:#fff0,color:#000
 ```mermaid
 graph RL
 
-R["(Feed root)"]:::feedroot
+R["(Feed root)"]
 A[updates age]
 B[updates name]:::blue
 C[updates age]:::blue
@@ -98,7 +98,7 @@ classDef blue fill:#6af,stroke:#fff0,color:#000
 ```mermaid
 graph RL
 
-R["(Feed root)"]:::feedroot
+R["(Feed root)"]
 A[updates age]
 B[updates name]:::blue
 C[updates age]:::blue
@@ -118,7 +118,7 @@ classDef blue fill:#6af,stroke:#fff0,color:#000
 ```mermaid
 graph RL
 
-R["(Feed root)"]:::feedroot
+R["(Feed root)"]
 A[updates age]
 B[updates name]
 C[updates age]
