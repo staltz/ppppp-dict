@@ -15,6 +15,7 @@ E[updates age & name]
 C-->B-->A-->R
 D--->A
 E-->D & C
+classDef default fill:#999,stroke:#fff0,color:#000
 ```
 
 Reducing the tangle above in a topological sort allows you to build a record
@@ -55,7 +56,8 @@ graph RL
 R["(Feed root)"]:::feedroot
 A[updates age]:::blue
 A-->R
-classDef blue fill:#69f,stroke:#fff0,color:#000
+classDef default fill:#999,stroke:#fff0,color:#000
+classDef blue fill:#6af,stroke:#fff0,color:#000
 ```
 
 ----
@@ -67,7 +69,8 @@ R["(Feed root)"]:::feedroot
 A[updates age]:::blue
 B[updates name]:::blue
 B-->A-->R
-classDef blue fill:#69f,stroke:#fff0,color:#000
+classDef default fill:#999,stroke:#fff0,color:#000
+classDef blue fill:#6af,stroke:#fff0,color:#000
 ```
 
 -----
@@ -85,7 +88,8 @@ C-->B-->A-->R
 C-- supersedes -->A
 
 linkStyle 3 stroke-width:1px,stroke:#05f
-classDef blue fill:#69f,stroke:#fff0,color:#000
+classDef default fill:#999,stroke:#fff0,color:#000
+classDef blue fill:#6af,stroke:#fff0,color:#000
 ```
 
 -----
@@ -105,7 +109,8 @@ D--->A
 C-- supersedes -->A
 
 linkStyle 4 stroke-width:1px,stroke:#05f
-classDef blue fill:#69f,stroke:#fff0,color:#000
+classDef default fill:#999,stroke:#fff0,color:#000
+classDef blue fill:#6af,stroke:#fff0,color:#000
 ```
 -----
 
@@ -128,5 +133,6 @@ E-- supersedes -->C
 E-- supersedes -->D
 
 linkStyle 3,7,8 stroke-width:1px,stroke:#05f
-classDef blue fill:#69f,stroke:#fff0,color:#000
+classDef default fill:#999,stroke:#fff0,color:#000
+classDef blue fill:#6af,stroke:#fff0,color:#000
 ```
