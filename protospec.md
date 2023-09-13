@@ -21,13 +21,13 @@ classDef default fill:#bbb,stroke:#fff0,color:#000
 Reducing the tangle above in a topological sort allows you to build a record
 (a JSON object) `{age, name}`.
 
-## Msg type
+## Msg metadata domain
 
-`msg.metadata.type` MUST start with `record_v1__`. E.g. `record_v1__profile`.
+`msg.metadata.domain` MUST start with `record_v1__`. E.g. `record_v1__profile`.
 
-## Msg content
+## Msg data
 
-`msg.content` format:
+`msg.data` format:
 
 ```typescript
 interface MsgContent {
@@ -36,7 +36,7 @@ interface MsgContent {
 }
 ```
 
-RECOMMENDED that the `msg.content.update` is as flat as possible (no nesting).
+RECOMMENDED that the `msg.data.update` is as flat as possible (no nesting).
 
 ## Supersedes links
 
