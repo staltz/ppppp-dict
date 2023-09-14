@@ -28,7 +28,7 @@
   "devDependencies": {
     "bs58": "^5.0.0",
     "c8": "7",
-    "ppppp-db": "file:../db",
+    "ppppp-db": "github:staltz/ppppp-db",
     "ppppp-caps": "github:staltz/ppppp-caps",
     "ppppp-keypair": "github:staltz/ppppp-keypair",
     "rimraf": "^4.4.0",

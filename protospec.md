@@ -30,7 +30,7 @@ Reducing the tangle above in a topological sort allows you to build a record
 `msg.data` format:
 
 ```typescript
-interface MsgContent {
+interface MsgData {
   update: Record<string, any>,
   supersedes: Array<MsgHash>,
 }
