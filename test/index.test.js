@@ -79,6 +79,8 @@ test('Record update() and get()', async (t) => {
     { age: ['9iTTqNabtnXmw4AiZxNMRq'], name: ['M2JhM7TE2KX5T5rfnxBh6M'] },
     'fieldRoots'
   )
+
+
 })
 
 test('Record squeeze', async (t) => {
@@ -140,6 +142,9 @@ test('Record receives old branched update', async (t) => {
     },
     'fieldRoots'
   )
+
+  const altFieldRoots7 = peer.record.getFieldRootsOfTangle(mootID)
+  assert.deepEqual(altFieldRoots7, fieldRoots7, 'getFieldRootsOfTangle')
 
   assert.equal(peer.record._squeezePotential('profile'), 6, 'squeezePotential=6')
 })
