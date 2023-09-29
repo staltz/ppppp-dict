@@ -29,22 +29,22 @@ test('setup', async (t) => {
 
 test('Record update() and get()', async (t) => {
   assert(
-    await p(peer.record.update)(aliceID, 'profile', { name: 'alice' }),
+    await p(peer.record.update)('profile', { name: 'alice' }),
     'update .name'
   )
-  assert.deepEqual(peer.record.get(aliceID, 'profile'), { name: 'alice' }, 'get')
+  assert.deepEqual(peer.record.read(aliceID, 'profile'), { name: 'alice' }, 'get')
 
-  const fieldRoots1 = peer.record.getFieldRoots(aliceID, 'profile')
+  const fieldRoots1 = peer.record.getFieldRoots('profile')
   assert.deepEqual(fieldRoots1, { name: ['PbwnLbJS4oninQ1RPCdgRn'] }, 'fieldRoots')
 
-  assert(await p(peer.record.update)(aliceID, 'profile', { age: 20 }), 'update .age')
+  assert(await p(peer.record.update)('profile', { age: 20 }), 'update .age')
   assert.deepEqual(
-    peer.record.get(aliceID, 'profile'),
+    peer.record.read(aliceID, 'profile'),
     { name: 'alice', age: 20 },
     'get'
   )
 
-  const fieldRoots2 = peer.record.getFieldRoots(aliceID, 'profile')
+  const fieldRoots2 = peer.record.getFieldRoots('profile')
   assert.deepEqual(
     fieldRoots2,
     { name: ['PbwnLbJS4oninQ1RPCdgRn'], age: ['9iTTqNabtnXmw4AiZxNMRq'] },
@@ -52,28 +52,28 @@ test('Record update() and get()', async (t) => {
   )
 
   assert.equal(
-    await p(peer.record.update)(aliceID, 'profile', { name: 'alice' }),
+    await p(peer.record.update)('profile', { name: 'alice' }),
     false,
     'redundant update .name'
   )
   assert.deepEqual(
-    peer.record.get(aliceID, 'profile'),
+    peer.record.read(aliceID, 'profile'),
     { name: 'alice', age: 20 },
     'get'
   )
 
   assert.equal(
-    await p(peer.record.update)(aliceID, 'profile', { name: 'Alice' }),
+    await p(peer.record.update)('profile', { name: 'Alice' }),
     true,
     'update .name'
   )
   assert.deepEqual(
-    peer.record.get(aliceID, 'profile'),
+    peer.record.read(aliceID, 'profile'),
     { name: 'Alice', age: 20 },
     'get'
   )
 
-  const fieldRoots3 = peer.record.getFieldRoots(aliceID, 'profile')
+  const fieldRoots3 = peer.record.getFieldRoots('profile')
   assert.deepEqual(
     fieldRoots3,
     { age: ['9iTTqNabtnXmw4AiZxNMRq'], name: ['M2JhM7TE2KX5T5rfnxBh6M'] },
@@ -82,11 +82,11 @@ test('Record update() and get()', async (t) => {
 })
 
 test('Record squeeze', async (t) => {
-  assert(await p(peer.record.update)(aliceID, 'profile', { age: 21 }), 'update .age')
-  assert(await p(peer.record.update)(aliceID, 'profile', { age: 22 }), 'update .age')
-  assert(await p(peer.record.update)(aliceID, 'profile', { age: 23 }), 'update .age')
+  assert(await p(peer.record.update)('profile', { age: 21 }), 'update .age')
+  assert(await p(peer.record.update)('profile', { age: 22 }), 'update .age')
+  assert(await p(peer.record.update)('profile', { age: 23 }), 'update .age')
 
-  const fieldRoots4 = peer.record.getFieldRoots(aliceID, 'profile')
+  const fieldRoots4 = peer.record.getFieldRoots('profile')
   assert.deepEqual(
     fieldRoots4,
     { name: ['M2JhM7TE2KX5T5rfnxBh6M'], age: ['S3xiydrT6Y34Bp1vg6wN7P'] },
@@ -94,9 +94,9 @@ test('Record squeeze', async (t) => {
   )
 
   assert.equal(peer.record._squeezePotential('profile'), 3, 'squeezePotential=3')
-  assert.equal(await p(peer.record.squeeze)(aliceID, 'profile'), true, 'squeezed')
+  assert.equal(await p(peer.record.squeeze)('profile'), true, 'squeezed')
 
-  const fieldRoots5 = peer.record.getFieldRoots(aliceID, 'profile')
+  const fieldRoots5 = peer.record.getFieldRoots('profile')
   assert.deepEqual(
     fieldRoots5,
     { name: ['Y4JkpPCHN8Avtz4VALaAmK'], age: ['Y4JkpPCHN8Avtz4VALaAmK'] },
@@ -104,9 +104,9 @@ test('Record squeeze', async (t) => {
   )
 
   assert.equal(peer.record._squeezePotential('profile'), 0, 'squeezePotential=0')
-  assert.equal(await p(peer.record.squeeze)(aliceID, 'profile'), false,'squeeze idempotent')
+  assert.equal(await p(peer.record.squeeze)('profile'), false,'squeeze idempotent')
 
-  const fieldRoots6 = peer.record.getFieldRoots(aliceID, 'profile')
+  const fieldRoots6 = peer.record.getFieldRoots('profile')
   assert.deepEqual(fieldRoots6, fieldRoots5, 'fieldRoots')
 })
 
@@ -131,7 +131,7 @@ test('Record receives old branched update', async (t) => {
   const rec = await p(peer.db.add)(msg, mootID)
   assert.equal(rec.id, 'XZWr3DZFG253awsWXgSkS2', 'msg ID')
 
-  const fieldRoots7 = peer.record.getFieldRoots(aliceID, 'profile')
+  const fieldRoots7 = peer.record.getFieldRoots('profile')
   assert.deepEqual(
     fieldRoots7,
     {
