@@ -116,6 +116,8 @@ test('Record receives old branched update', async (t) => {
   const moot = MsgV3.createMoot(aliceID, 'record_v1__profile', aliceKeypair)
   const mootID = MsgV3.getMsgID(moot)
 
+  assert.equal(peer.record.getMinRequiredDepth(mootID), 7, 'getMinRequiredDepth')
+
   const tangle = new MsgV3.Tangle(mootID)
   tangle.add(mootID, moot)
   await p(peer.db.add)(moot, mootID)
@@ -143,8 +145,7 @@ test('Record receives old branched update', async (t) => {
     'fieldRoots'
   )
 
-  const altFieldRoots7 = peer.record.getFieldRootsOfTangle(mootID)
-  assert.deepEqual(altFieldRoots7, fieldRoots7, 'getFieldRootsOfTangle')
+  assert.equal(peer.record.getMinRequiredDepth(mootID), 1, 'getMinRequiredDepth')
 
   assert.equal(peer.record._squeezePotential('profile'), 6, 'squeezePotential=6')
 })
