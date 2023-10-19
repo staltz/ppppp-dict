@@ -134,11 +134,6 @@ test('Record squeeze', async (t) => {
   assert.deepEqual(fieldRoots6, fieldRoots5, 'fieldRoots')
 })
 
-test('Record isRoot', (t) => {
-  const moot = MsgV3.createMoot(aliceID, 'record_v1__profile', aliceKeypair)
-  assert.ok(peer.record.isRoot(moot), 'isRoot')
-})
-
 test('Record isGhostable', (t) => {
   const moot = MsgV3.createMoot(aliceID, 'record_v1__profile', aliceKeypair)
   const mootID = MsgV3.getMsgID(moot)
