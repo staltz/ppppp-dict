@@ -32,10 +32,18 @@ test('Record update() and get()', async (t) => {
     await p(peer.record.update)('profile', { name: 'alice' }),
     'update .name'
   )
-  assert.deepEqual(peer.record.read(aliceID, 'profile'), { name: 'alice' }, 'get')
+  assert.deepEqual(
+    peer.record.read(aliceID, 'profile'),
+    { name: 'alice' },
+    'get'
+  )
 
   const fieldRoots1 = peer.record.getFieldRoots('profile')
-  assert.deepEqual(fieldRoots1, { name: ['PbwnLbJS4oninQ1RPCdgRn'] }, 'fieldRoots')
+  assert.deepEqual(
+    fieldRoots1,
+    { name: ['PbwnLbJS4oninQ1RPCdgRn'] },
+    'fieldRoots'
+  )
 
   assert(await p(peer.record.update)('profile', { age: 20 }), 'update .age')
   assert.deepEqual(
@@ -79,8 +87,6 @@ test('Record update() and get()', async (t) => {
     { age: ['9iTTqNabtnXmw4AiZxNMRq'], name: ['M2JhM7TE2KX5T5rfnxBh6M'] },
     'fieldRoots'
   )
-
-
 })
 
 test('Record squeeze', async (t) => {
@@ -95,7 +101,11 @@ test('Record squeeze', async (t) => {
     'fieldRoots'
   )
 
-  assert.equal(peer.record._squeezePotential('profile'), 3, 'squeezePotential=3')
+  assert.equal(
+    peer.record._squeezePotential('profile'),
+    3,
+    'squeezePotential=3'
+  )
   assert.equal(await p(peer.record.squeeze)('profile'), true, 'squeezed')
 
   const fieldRoots5 = peer.record.getFieldRoots('profile')
@@ -105,8 +115,16 @@ test('Record squeeze', async (t) => {
     'fieldRoots'
   )
 
-  assert.equal(peer.record._squeezePotential('profile'), 0, 'squeezePotential=0')
-  assert.equal(await p(peer.record.squeeze)('profile'), false,'squeeze idempotent')
+  assert.equal(
+    peer.record._squeezePotential('profile'),
+    0,
+    'squeezePotential=0'
+  )
+  assert.equal(
+    await p(peer.record.squeeze)('profile'),
+    false,
+    'squeeze idempotent'
+  )
 
   const fieldRoots6 = peer.record.getFieldRoots('profile')
   assert.deepEqual(fieldRoots6, fieldRoots5, 'fieldRoots')
@@ -116,7 +134,11 @@ test('Record receives old branched update', async (t) => {
   const moot = MsgV3.createMoot(aliceID, 'record_v1__profile', aliceKeypair)
   const mootID = MsgV3.getMsgID(moot)
 
-  assert.equal(peer.record.getMinRequiredDepth(mootID), 7, 'getMinRequiredDepth')
+  assert.equal(
+    peer.record.getMinRequiredDepth(mootID),
+    7,
+    'getMinRequiredDepth'
+  )
 
   const tangle = new MsgV3.Tangle(mootID)
   tangle.add(mootID, moot)
@@ -145,9 +167,17 @@ test('Record receives old branched update', async (t) => {
     'fieldRoots'
   )
 
-  assert.equal(peer.record.getMinRequiredDepth(mootID), 1, 'getMinRequiredDepth')
+  assert.equal(
+    peer.record.getMinRequiredDepth(mootID),
+    1,
+    'getMinRequiredDepth'
+  )
 
-  assert.equal(peer.record._squeezePotential('profile'), 6, 'squeezePotential=6')
+  assert.equal(
+    peer.record._squeezePotential('profile'),
+    6,
+    'squeezePotential=6'
+  )
 })
 
 test('teardown', async (t) => {
