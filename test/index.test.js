@@ -143,6 +143,8 @@ test('Record isGhostable', (t) => {
   const moot = MsgV3.createMoot(aliceID, 'record_v1__profile', aliceKeypair)
   const mootID = MsgV3.getMsgID(moot)
 
+  assert.equal(mootID, peer.record.getFeedID('profile'), 'getFeedID')
+
   const tangle = peer.db.getTangle(mootID)
   const msgIDs = tangle.topoSort()
 
