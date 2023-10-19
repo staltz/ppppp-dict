@@ -16,7 +16,11 @@ const aliceKeypair = Keypair.generate('ed25519', 'alice')
 let peer
 let aliceID
 test('setup', async (t) => {
-  peer = createPeer({ keypair: aliceKeypair, path: DIR })
+  peer = createPeer({
+    keypair: aliceKeypair,
+    path: DIR,
+    record: { ghostSpan: 4 },
+  })
 
   await peer.db.loaded()
 
@@ -128,6 +132,33 @@ test('Record squeeze', async (t) => {
 
   const fieldRoots6 = peer.record.getFieldRoots('profile')
   assert.deepEqual(fieldRoots6, fieldRoots5, 'fieldRoots')
+})
+
+test('Record isRoot', (t) => {
+  const moot = MsgV3.createMoot(aliceID, 'record_v1__profile', aliceKeypair)
+  assert.ok(peer.record.isRoot(moot), 'isRoot')
+})
+
+test('Record isGhostable', (t) => {
+  const moot = MsgV3.createMoot(aliceID, 'record_v1__profile', aliceKeypair)
+  const mootID = MsgV3.getMsgID(moot)
+
+  const tangle = peer.db.getTangle(mootID)
+  const msgIDs = tangle.topoSort()
+
+  const fieldRoots = peer.record.getFieldRoots('profile')
+  assert.deepEqual(fieldRoots.age, [msgIDs[7]])
+
+  // Remember from the setup, that ghostSpan=4
+  assert.equal(msgIDs.length, 8);
+  assert.equal(peer.record.isGhostable(msgIDs[0], mootID), false) // moot
+  assert.equal(peer.record.isGhostable(msgIDs[1], mootID), false)
+  assert.equal(peer.record.isGhostable(msgIDs[2], mootID), false)
+  assert.equal(peer.record.isGhostable(msgIDs[3], mootID), true) // in ghostSpan
+  assert.equal(peer.record.isGhostable(msgIDs[4], mootID), true) // in ghostSpan
+  assert.equal(peer.record.isGhostable(msgIDs[5], mootID), true) // in ghostSpan
+  assert.equal(peer.record.isGhostable(msgIDs[6], mootID), true) // in ghostSpan
+  assert.equal(peer.record.isGhostable(msgIDs[7], mootID), false) // field root
 })
 
 test('Record receives old branched update', async (t) => {
