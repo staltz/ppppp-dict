@@ -12,7 +12,8 @@
   "main": "index.js",
   "files": [
     "*.js",
-    "lib/*.js"
+    "lib/*.js",
+    "lib/*.d.ts"
   ],
   "exports": {
     ".": {
