@@ -29,6 +29,8 @@ test('setup', async (t) => {
     _nonce: 'alice',
   })
   await p(peer.record.load)(aliceID)
+
+  assert.equal(peer.record.getGhostSpan(), 4, 'getGhostSpan')
 })
 
 test('Record update() and get()', async (t) => {
