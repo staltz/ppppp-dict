@@ -18,12 +18,12 @@ E-->D & C
 classDef default fill:#bbb,stroke:#fff0,color:#000
 ```
 
-Reducing the tangle above in a topological sort allows you to build a record
+Reducing the tangle above in a topological sort allows you to build a dict
 (a JSON object) `{age, name}`.
 
 ## Msg metadata domain
 
-`msg.metadata.domain` MUST start with `record_v1__`. E.g. `record_v1__profile`.
+`msg.metadata.domain` MUST start with `dict_v1__`. E.g. `dict_v1__profile`.
 
 ## Msg data
 
@@ -31,7 +31,9 @@ Reducing the tangle above in a topological sort allows you to build a record
 
 ```typescript
 interface MsgData {
-  update: Record<string, any>,
+  update: {
+    [field in string]: any,
+  },
   supersedes: Array<MsgHash>,
 }
 ```
@@ -40,11 +42,11 @@ RECOMMENDED that the `msg.data.update` is as flat as possible (no nesting).
 
 ## Supersedes links
 
-When you update a field in a record, in the `supersedes` array you MUST point
+When you update a field in a dict, in the `supersedes` array you MUST point
 to the currently-known highest-depth msg that updated that field.
 
 The set of *not-transitively-superseded-by-anyone* msgs comprise the
-"field roots" of the record. To allow pruning the tangle, we can delete
+"field roots" of the dict. To allow pruning the tangle, we can delete
 (or, if we want to keep metadata, "erase") all msgs preceding the field roots.
 
 Suppose the tangle is grown in the order below, then the field roots are

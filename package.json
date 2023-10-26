@@ -1,13 +1,13 @@
 {
-  "name": "ppppp-record",
+  "name": "ppppp-dict",
   "version": "1.0.0",
-  "description": "Record data structure over append-only logs with pruning",
+  "description": "Dictionary data structure over append-only logs with pruning",
   "author": "Andre Staltz <contact@staltz.com>",
   "license": "MIT",
-  "homepage": "https://github.com/staltz/ppppp-record",
+  "homepage": "https://github.com/staltz/ppppp-dict",
   "repository": {
     "type": "git",
-    "url": "git@github.com:staltz/ppppp-record.git"
+    "url": "git@github.com:staltz/ppppp-dict.git"
   },
   "main": "index.js",
   "files": [

@@ -8,7 +8,7 @@ const Keypair = require('ppppp-keypair')
 const p = require('util').promisify
 const { createPeer } = require('./util')
 
-const DIR = path.join(os.tmpdir(), 'ppppp-record')
+const DIR = path.join(os.tmpdir(), 'ppppp-dict')
 rimraf.sync(DIR)
 
 const aliceKeypair = Keypair.generate('ed25519', 'alice')
@@ -19,7 +19,7 @@ test('setup', async (t) => {
   peer = createPeer({
     keypair: aliceKeypair,
     path: DIR,
-    record: { ghostSpan: 4 },
+    dict: { ghostSpan: 4 },
   })
 
   await peer.db.loaded()
@@ -28,143 +28,143 @@ test('setup', async (t) => {
     domain: 'account',
     _nonce: 'alice',
   })
-  await p(peer.record.load)(aliceID)
+  await p(peer.dict.load)(aliceID)
 
-  assert.equal(peer.record.getGhostSpan(), 4, 'getGhostSpan')
+  assert.equal(peer.dict.getGhostSpan(), 4, 'getGhostSpan')
 })
 
-test('Record update() and get()', async (t) => {
+test('Dict update() and get()', async (t) => {
   assert(
-    await p(peer.record.update)('profile', { name: 'alice' }),
+    await p(peer.dict.update)('profile', { name: 'alice' }),
     'update .name'
   )
   assert.deepEqual(
-    peer.record.read(aliceID, 'profile'),
+    peer.dict.read(aliceID, 'profile'),
     { name: 'alice' },
     'get'
   )
 
-  const fieldRoots1 = peer.record._getFieldRoots('profile')
+  const fieldRoots1 = peer.dict._getFieldRoots('profile')
   assert.deepEqual(
     fieldRoots1,
-    { name: ['PbwnLbJS4oninQ1RPCdgRn'] },
+    { name: ['QZSb3GMTRWWUUVLtueNB7Q'] },
     'fieldRoots'
   )
 
-  assert(await p(peer.record.update)('profile', { age: 20 }), 'update .age')
+  assert(await p(peer.dict.update)('profile', { age: 20 }), 'update .age')
   assert.deepEqual(
-    peer.record.read(aliceID, 'profile'),
+    peer.dict.read(aliceID, 'profile'),
     { name: 'alice', age: 20 },
     'get'
   )
 
-  const fieldRoots2 = peer.record._getFieldRoots('profile')
+  const fieldRoots2 = peer.dict._getFieldRoots('profile')
   assert.deepEqual(
     fieldRoots2,
-    { name: ['PbwnLbJS4oninQ1RPCdgRn'], age: ['9iTTqNabtnXmw4AiZxNMRq'] },
+    { name: ['QZSb3GMTRWWUUVLtueNB7Q'], age: ['98QTF8Zip6NYJgmcf96L2K'] },
     'fieldRoots'
   )
 
   assert.equal(
-    await p(peer.record.update)('profile', { name: 'alice' }),
+    await p(peer.dict.update)('profile', { name: 'alice' }),
     false,
     'redundant update .name'
   )
   assert.deepEqual(
-    peer.record.read(aliceID, 'profile'),
+    peer.dict.read(aliceID, 'profile'),
     { name: 'alice', age: 20 },
     'get'
   )
 
   assert.equal(
-    await p(peer.record.update)('profile', { name: 'Alice' }),
+    await p(peer.dict.update)('profile', { name: 'Alice' }),
     true,
     'update .name'
   )
   assert.deepEqual(
-    peer.record.read(aliceID, 'profile'),
+    peer.dict.read(aliceID, 'profile'),
     { name: 'Alice', age: 20 },
     'get'
   )
 
-  const fieldRoots3 = peer.record._getFieldRoots('profile')
+  const fieldRoots3 = peer.dict._getFieldRoots('profile')
   assert.deepEqual(
     fieldRoots3,
-    { age: ['9iTTqNabtnXmw4AiZxNMRq'], name: ['M2JhM7TE2KX5T5rfnxBh6M'] },
+    { age: ['98QTF8Zip6NYJgmcf96L2K'], name: ['49rg6mJFDgdq6kZTE8uedr'] },
     'fieldRoots'
   )
 })
 
-test('Record squeeze', async (t) => {
-  assert(await p(peer.record.update)('profile', { age: 21 }), 'update .age')
-  assert(await p(peer.record.update)('profile', { age: 22 }), 'update .age')
-  assert(await p(peer.record.update)('profile', { age: 23 }), 'update .age')
+test('Dict squeeze', async (t) => {
+  assert(await p(peer.dict.update)('profile', { age: 21 }), 'update .age')
+  assert(await p(peer.dict.update)('profile', { age: 22 }), 'update .age')
+  assert(await p(peer.dict.update)('profile', { age: 23 }), 'update .age')
 
-  const fieldRoots4 = peer.record._getFieldRoots('profile')
+  const fieldRoots4 = peer.dict._getFieldRoots('profile')
   assert.deepEqual(
     fieldRoots4,
-    { name: ['M2JhM7TE2KX5T5rfnxBh6M'], age: ['S3xiydrT6Y34Bp1vg6wN7P'] },
+    { name: ['49rg6mJFDgdq6kZTE8uedr'], age: ['GE9KcJc5efunBhSTDjy6zX'] },
     'fieldRoots'
   )
 
   assert.equal(
-    peer.record._squeezePotential('profile'),
+    peer.dict._squeezePotential('profile'),
     3,
     'squeezePotential=3'
   )
-  assert.equal(await p(peer.record.squeeze)('profile'), true, 'squeezed')
+  assert.equal(await p(peer.dict.squeeze)('profile'), true, 'squeezed')
 
-  const fieldRoots5 = peer.record._getFieldRoots('profile')
+  const fieldRoots5 = peer.dict._getFieldRoots('profile')
   assert.deepEqual(
     fieldRoots5,
-    { name: ['Y4JkpPCHN8Avtz4VALaAmK'], age: ['Y4JkpPCHN8Avtz4VALaAmK'] },
+    { name: ['Xr7DZdwaANzPByUdRYGb2E'], age: ['Xr7DZdwaANzPByUdRYGb2E'] },
     'fieldRoots'
   )
 
   assert.equal(
-    peer.record._squeezePotential('profile'),
+    peer.dict._squeezePotential('profile'),
     0,
     'squeezePotential=0'
   )
   assert.equal(
-    await p(peer.record.squeeze)('profile'),
+    await p(peer.dict.squeeze)('profile'),
     false,
     'squeeze idempotent'
   )
 
-  const fieldRoots6 = peer.record._getFieldRoots('profile')
+  const fieldRoots6 = peer.dict._getFieldRoots('profile')
   assert.deepEqual(fieldRoots6, fieldRoots5, 'fieldRoots')
 })
 
-test('Record isGhostable', (t) => {
-  const moot = MsgV3.createMoot(aliceID, 'record_v1__profile', aliceKeypair)
+test('Dict isGhostable', (t) => {
+  const moot = MsgV3.createMoot(aliceID, 'dict_v1__profile', aliceKeypair)
   const mootID = MsgV3.getMsgID(moot)
 
-  assert.equal(mootID, peer.record.getFeedID('profile'), 'getFeedID')
+  assert.equal(mootID, peer.dict.getFeedID('profile'), 'getFeedID')
 
   const tangle = peer.db.getTangle(mootID)
   const msgIDs = tangle.topoSort()
 
-  const fieldRoots = peer.record._getFieldRoots('profile')
+  const fieldRoots = peer.dict._getFieldRoots('profile')
   assert.deepEqual(fieldRoots.age, [msgIDs[7]])
 
   // Remember from the setup, that ghostSpan=4
   assert.equal(msgIDs.length, 8)
-  assert.equal(peer.record.isGhostable(msgIDs[0], mootID), false) // moot
-  assert.equal(peer.record.isGhostable(msgIDs[1], mootID), false)
-  assert.equal(peer.record.isGhostable(msgIDs[2], mootID), false)
-  assert.equal(peer.record.isGhostable(msgIDs[3], mootID), true) // in ghostSpan
-  assert.equal(peer.record.isGhostable(msgIDs[4], mootID), true) // in ghostSpan
-  assert.equal(peer.record.isGhostable(msgIDs[5], mootID), true) // in ghostSpan
-  assert.equal(peer.record.isGhostable(msgIDs[6], mootID), true) // in ghostSpan
-  assert.equal(peer.record.isGhostable(msgIDs[7], mootID), false) // field root
+  assert.equal(peer.dict.isGhostable(msgIDs[0], mootID), false) // moot
+  assert.equal(peer.dict.isGhostable(msgIDs[1], mootID), false)
+  assert.equal(peer.dict.isGhostable(msgIDs[2], mootID), false)
+  assert.equal(peer.dict.isGhostable(msgIDs[3], mootID), true) // in ghostSpan
+  assert.equal(peer.dict.isGhostable(msgIDs[4], mootID), true) // in ghostSpan
+  assert.equal(peer.dict.isGhostable(msgIDs[5], mootID), true) // in ghostSpan
+  assert.equal(peer.dict.isGhostable(msgIDs[6], mootID), true) // in ghostSpan
+  assert.equal(peer.dict.isGhostable(msgIDs[7], mootID), false) // field root
 })
 
-test('Record receives old branched update', async (t) => {
-  const moot = MsgV3.createMoot(aliceID, 'record_v1__profile', aliceKeypair)
+test('Dict receives old branched update', async (t) => {
+  const moot = MsgV3.createMoot(aliceID, 'dict_v1__profile', aliceKeypair)
   const mootID = MsgV3.getMsgID(moot)
 
-  assert.equal(peer.record.minRequiredDepth(mootID), 7, 'minRequiredDepth')
+  assert.equal(peer.dict.minRequiredDepth(mootID), 7, 'minRequiredDepth')
 
   const tangle = new MsgV3.Tangle(mootID)
   tangle.add(mootID, moot)
@@ -172,7 +172,7 @@ test('Record receives old branched update', async (t) => {
 
   const msg = MsgV3.create({
     keypair: aliceKeypair,
-    domain: 'record_v1__profile',
+    domain: 'dict_v1__profile',
     account: aliceID,
     accountTips: [aliceID],
     data: { update: { age: 2 }, supersedes: [] },
@@ -181,22 +181,22 @@ test('Record receives old branched update', async (t) => {
     },
   })
   const rec = await p(peer.db.add)(msg, mootID)
-  assert.equal(rec.id, 'XZWr3DZFG253awsWXgSkS2', 'msg ID')
+  assert.equal(rec.id, 'PBq5dgfK9icRVx7SLhyaC5', 'msg ID')
 
-  const fieldRoots7 = peer.record._getFieldRoots('profile')
+  const fieldRoots7 = peer.dict._getFieldRoots('profile')
   assert.deepEqual(
     fieldRoots7,
     {
-      name: ['Y4JkpPCHN8Avtz4VALaAmK'],
-      age: ['Y4JkpPCHN8Avtz4VALaAmK', rec.id],
+      name: ['Xr7DZdwaANzPByUdRYGb2E'],
+      age: ['Xr7DZdwaANzPByUdRYGb2E', rec.id],
     },
     'fieldRoots'
   )
 
-  assert.equal(peer.record.minRequiredDepth(mootID), 1, 'minRequiredDepth')
+  assert.equal(peer.dict.minRequiredDepth(mootID), 1, 'minRequiredDepth')
 
   assert.equal(
-    peer.record._squeezePotential('profile'),
+    peer.dict._squeezePotential('profile'),
     6,
     'squeezePotential=6'
   )
