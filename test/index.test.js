@@ -13,6 +13,17 @@ rimraf.sync(DIR)
 
 const aliceKeypair = Keypair.generate('ed25519', 'alice')
 
+function getMsgID(peer, index, domain) {
+  let i = 0
+  for (const rec of peer.db.records()) {
+    if (rec.msg.metadata.domain === domain && !!rec.msg.data) {
+      if (i === index) return rec.id
+      i++
+    }
+  }
+  throw new Error('msg not found')
+}
+
 let peer
 let aliceID
 test('setup', async (t) => {
@@ -25,7 +36,7 @@ test('setup', async (t) => {
   await peer.db.loaded()
 
   aliceID = await p(peer.db.account.create)({
-    domain: 'account',
+    subdomain: 'account',
     _nonce: 'alice',
   })
   await p(peer.dict.load)(aliceID)
@@ -38,20 +49,23 @@ test('Dict update() and get()', async (t) => {
     await p(peer.dict.update)('profile', { name: 'alice' }),
     'update .name'
   )
+  const UPDATE0_ID = getMsgID(peer, 0, 'dict_v1__profile')
   assert.deepEqual(
     peer.dict.read(aliceID, 'profile'),
     { name: 'alice' },
     'get'
   )
 
+
   const fieldRoots1 = peer.dict._getFieldRoots('profile')
   assert.deepEqual(
     fieldRoots1,
-    { name: ['QZSb3GMTRWWUUVLtueNB7Q'] },
+    { name: [UPDATE0_ID] },
     'fieldRoots'
   )
 
   assert(await p(peer.dict.update)('profile', { age: 20 }), 'update .age')
+  const UPDATE1_ID = getMsgID(peer, 1, 'dict_v1__profile')
   assert.deepEqual(
     peer.dict.read(aliceID, 'profile'),
     { name: 'alice', age: 20 },
@@ -61,7 +75,7 @@ test('Dict update() and get()', async (t) => {
   const fieldRoots2 = peer.dict._getFieldRoots('profile')
   assert.deepEqual(
     fieldRoots2,
-    { name: ['QZSb3GMTRWWUUVLtueNB7Q'], age: ['98QTF8Zip6NYJgmcf96L2K'] },
+    { name: [UPDATE0_ID], age: [UPDATE1_ID] },
     'fieldRoots'
   )
 
@@ -81,6 +95,7 @@ test('Dict update() and get()', async (t) => {
     true,
     'update .name'
   )
+  const UPDATE2_ID = getMsgID(peer, 2, 'dict_v1__profile')
   assert.deepEqual(
     peer.dict.read(aliceID, 'profile'),
     { name: 'Alice', age: 20 },
@@ -90,7 +105,7 @@ test('Dict update() and get()', async (t) => {
   const fieldRoots3 = peer.dict._getFieldRoots('profile')
   assert.deepEqual(
     fieldRoots3,
-    { age: ['98QTF8Zip6NYJgmcf96L2K'], name: ['49rg6mJFDgdq6kZTE8uedr'] },
+    { age: [UPDATE1_ID], name: [UPDATE2_ID] },
     'fieldRoots'
   )
 })
@@ -99,11 +114,13 @@ test('Dict squeeze', async (t) => {
   assert(await p(peer.dict.update)('profile', { age: 21 }), 'update .age')
   assert(await p(peer.dict.update)('profile', { age: 22 }), 'update .age')
   assert(await p(peer.dict.update)('profile', { age: 23 }), 'update .age')
+  const UPDATE2_ID = getMsgID(peer, 2, 'dict_v1__profile')
+  const UPDATE5_ID = getMsgID(peer, 5, 'dict_v1__profile')
 
   const fieldRoots4 = peer.dict._getFieldRoots('profile')
   assert.deepEqual(
     fieldRoots4,
-    { name: ['49rg6mJFDgdq6kZTE8uedr'], age: ['GE9KcJc5efunBhSTDjy6zX'] },
+    { name: [UPDATE2_ID], age: [UPDATE5_ID] },
     'fieldRoots'
   )
 
@@ -113,11 +130,12 @@ test('Dict squeeze', async (t) => {
     'squeezePotential=3'
   )
   assert.equal(await p(peer.dict.squeeze)('profile'), true, 'squeezed')
+  const UPDATE6_ID = getMsgID(peer, 6, 'dict_v1__profile')
 
   const fieldRoots5 = peer.dict._getFieldRoots('profile')
   assert.deepEqual(
     fieldRoots5,
-    { name: ['Xr7DZdwaANzPByUdRYGb2E'], age: ['Xr7DZdwaANzPByUdRYGb2E'] },
+    { name: [UPDATE6_ID], age: [UPDATE6_ID] },
     'fieldRoots'
   )
 
@@ -161,6 +179,8 @@ test('Dict isGhostable', (t) => {
 })
 
 test('Dict receives old branched update', async (t) => {
+  const UPDATE6_ID = getMsgID(peer, 6, 'dict_v1__profile')
+
   const moot = MsgV3.createMoot(aliceID, 'dict_v1__profile', aliceKeypair)
   const mootID = MsgV3.getMsgID(moot)
 
@@ -181,14 +201,13 @@ test('Dict receives old branched update', async (t) => {
     },
   })
   const rec = await p(peer.db.add)(msg, mootID)
-  assert.equal(rec.id, 'PBq5dgfK9icRVx7SLhyaC5', 'msg ID')
 
   const fieldRoots7 = peer.dict._getFieldRoots('profile')
   assert.deepEqual(
     fieldRoots7,
     {
-      name: ['Xr7DZdwaANzPByUdRYGb2E'],
-      age: ['Xr7DZdwaANzPByUdRYGb2E', rec.id],
+      name: [UPDATE6_ID],
+      age: [UPDATE6_ID, rec.id],
     },
     'fieldRoots'
   )
