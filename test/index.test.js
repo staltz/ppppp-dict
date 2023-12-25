@@ -3,7 +3,7 @@ const assert = require('node:assert')
 const path = require('path')
 const os = require('os')
 const rimraf = require('rimraf')
-const MsgV3 = require('ppppp-db/msg-v3')
+const MsgV4 = require('ppppp-db/msg-v4')
 const Keypair = require('ppppp-keypair')
 const p = require('util').promisify
 const { createPeer } = require('./util')
@@ -156,8 +156,8 @@ test('Dict squeeze', async (t) => {
 })
 
 test('Dict isGhostable', (t) => {
-  const moot = MsgV3.createMoot(aliceID, 'dict_v1__profile', aliceKeypair)
-  const mootID = MsgV3.getMsgID(moot)
+  const moot = MsgV4.createMoot(aliceID, 'dict_v1__profile', aliceKeypair)
+  const mootID = MsgV4.getMsgID(moot)
 
   assert.equal(mootID, peer.dict.getFeedID('profile'), 'getFeedID')
 
@@ -182,16 +182,16 @@ test('Dict isGhostable', (t) => {
 test('Dict receives old branched update', async (t) => {
   const UPDATE6_ID = getMsgID(peer, 6, 'dict_v1__profile')
 
-  const moot = MsgV3.createMoot(aliceID, 'dict_v1__profile', aliceKeypair)
-  const mootID = MsgV3.getMsgID(moot)
+  const moot = MsgV4.createMoot(aliceID, 'dict_v1__profile', aliceKeypair)
+  const mootID = MsgV4.getMsgID(moot)
 
   assert.equal(peer.dict.minRequiredDepth(mootID), 7, 'minRequiredDepth')
 
-  const tangle = new MsgV3.Tangle(mootID)
+  const tangle = new MsgV4.Tangle(mootID)
   tangle.add(mootID, moot)
   await p(peer.db.add)(moot, mootID)
 
-  const msg = MsgV3.create({
+  const msg = MsgV4.create({
     keypair: aliceKeypair,
     domain: 'dict_v1__profile',
     account: aliceID,
