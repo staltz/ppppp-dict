@@ -23,7 +23,7 @@ function createPeer(config) {
     throw new Error('need config.global.keypair in createPeer()')
   }
 
-  rimraf.sync(config.db.path)
+  rimraf.sync(config.global.path)
   return require('secret-stack/bare')()
     .use(require('secret-stack/plugins/net'))
     .use(require('secret-handshake-ext/secret-stack'))
