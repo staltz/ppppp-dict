@@ -4,17 +4,26 @@ const rimraf = require('rimraf')
 const caps = require('ppppp-caps')
 const Keypair = require('ppppp-keypair')
 
-function createPeer(opts) {
-  if (opts.name) {
+function createPeer(config) {
+  if (config.name) {
+    const name = config.name
     const tmp = OS.tmpdir()
-    opts.db ??= {path: Path.join(tmp, `ppppp-dict-${opts.name}-${Date.now()}`)}
-    opts.keypair ??= Keypair.generate('ed25519', opts.name)
-    opts.name = undefined
+    config.global ??= {}
+    config.global.path ??= Path.join(tmp, `ppppp-dict-${name}-${Date.now()}`)
+    config.global.keypair ??= Keypair.generate('ed25519', name)
+    delete config.name
   }
-  if (!opts.db.path) throw new Error('need opts.path in createPeer()')
-  if (!opts.keypair) throw new Error('need opts.keypair in createPeer()')
+  if (!config.global) {
+    throw new Error('need config.global in createPeer()')
+  }
+  if (!config.global.path) {
+    throw new Error('need config.global.path in createPeer()')
+  }
+  if (!config.global.keypair) {
+    throw new Error('need config.global.keypair in createPeer()')
+  }
 
-  rimraf.sync(opts.db.path)
+  rimraf.sync(config.db.path)
   return require('secret-stack/bare')()
     .use(require('secret-stack/plugins/net'))
     .use(require('secret-handshake-ext/secret-stack'))
@@ -22,16 +31,19 @@ function createPeer(opts) {
     .use(require('ssb-box'))
     .use(require('../lib'))
     .call(null, {
-      caps,
-      connections: {
-        incoming: {
-          net: [{ scope: 'device', transform: 'shse', port: null }],
+      shse: { caps },
+      ...config,
+      global: {
+        connections: {
+          incoming: {
+            net: [{ scope: 'device', transform: 'shse', port: null }],
+          },
+          outgoing: {
+            net: [{ transform: 'shse' }],
+          },
         },
-        outgoing: {
-          net: [{ transform: 'shse' }],
-        },
+        ...config.global,
       },
-      ...opts,
     })
 }
 

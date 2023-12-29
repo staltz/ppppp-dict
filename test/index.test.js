@@ -28,8 +28,10 @@ let peer
 let aliceID
 test('setup', async (t) => {
   peer = createPeer({
-    keypair: aliceKeypair,
-    db: {path: DIR},
+    global: {
+      keypair: aliceKeypair,
+      path: DIR,
+    },
     dict: { ghostSpan: 40 },
   })
 
@@ -51,19 +53,10 @@ test('Dict update() and get()', async (t) => {
     'update .name'
   )
   const UPDATE0_ID = getMsgID(peer, 0, 'dict_v1__profile')
-  assert.deepEqual(
-    peer.dict.read(aliceID, 'profile'),
-    { name: 'alice' },
-    'get'
-  )
-
+  assert.deepEqual(peer.dict.read(aliceID, 'profile'), { name: 'alice' }, 'get')
 
   const fieldRoots1 = peer.dict._getFieldRoots('profile')
-  assert.deepEqual(
-    fieldRoots1,
-    { name: [UPDATE0_ID] },
-    'fieldRoots'
-  )
+  assert.deepEqual(fieldRoots1, { name: [UPDATE0_ID] }, 'fieldRoots')
 
   assert(await p(peer.dict.update)('profile', { age: 20 }), 'update .age')
   const UPDATE1_ID = getMsgID(peer, 1, 'dict_v1__profile')
@@ -125,11 +118,7 @@ test('Dict squeeze', async (t) => {
     'fieldRoots'
   )
 
-  assert.equal(
-    peer.dict._squeezePotential('profile'),
-    3,
-    'squeezePotential=3'
-  )
+  assert.equal(peer.dict._squeezePotential('profile'), 3, 'squeezePotential=3')
   assert.equal(await p(peer.dict.squeeze)('profile'), true, 'squeezed')
   const UPDATE6_ID = getMsgID(peer, 6, 'dict_v1__profile')
 
@@ -140,11 +129,7 @@ test('Dict squeeze', async (t) => {
     'fieldRoots'
   )
 
-  assert.equal(
-    peer.dict._squeezePotential('profile'),
-    0,
-    'squeezePotential=0'
-  )
+  assert.equal(peer.dict._squeezePotential('profile'), 0, 'squeezePotential=0')
   assert.equal(
     await p(peer.dict.squeeze)('profile'),
     false,
@@ -215,11 +200,7 @@ test('Dict receives old branched update', async (t) => {
 
   assert.equal(peer.dict.minRequiredDepth(mootID), 1, 'minRequiredDepth')
 
-  assert.equal(
-    peer.dict._squeezePotential('profile'),
-    6,
-    'squeezePotential=6'
-  )
+  assert.equal(peer.dict._squeezePotential('profile'), 6, 'squeezePotential=6')
 })
 
 test('teardown', async (t) => {
