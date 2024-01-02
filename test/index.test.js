@@ -42,6 +42,7 @@ test('setup', async (t) => {
     _nonce: 'alice',
   })
   await p(peer.dict.load)(aliceID)
+  await p(peer.dict.load)(aliceID) // on purpose test that re-load is idempotent
 
   peer.dict.setGhostSpan(4)
   assert.equal(peer.dict.getGhostSpan(), 4, 'getGhostSpan')
