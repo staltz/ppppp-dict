@@ -29,9 +29,9 @@
   "devDependencies": {
     "bs58": "^5.0.0",
     "c8": "7",
-    "ppppp-db": "github:staltz/ppppp-db",
-    "ppppp-caps": "github:staltz/ppppp-caps",
-    "ppppp-keypair": "github:staltz/ppppp-keypair",
+    "ppppp-db": "github:staltz/ppppp-db#667b33779d98aff12a9b0cd2d7c80469a95cd04e",
+    "ppppp-caps": "github:staltz/ppppp-caps#93fa810b9a40b78aef4872d4c2a8412cccb52929",
+    "ppppp-keypair": "github:staltz/ppppp-keypair#61ef4420578f450dc2cc7b1efc1c5a691a871c74",
     "rimraf": "^4.4.0",
     "secret-stack": "~8.1.0",
     "secret-handshake-ext": "0.0.10",
